@@ -22,6 +22,7 @@ namespace MyPortfolioWebsite.Pages.Dashboard
 
         [BindProperty] public AppUser Profile { get; set; } = default!;
         [BindProperty] public IFormFile? ProfilePictureFile { get; set; }
+        [BindProperty] public string? CroppedPhotoData { get; set; }
 
         public IActionResult OnGet()
         {
@@ -71,38 +72,41 @@ namespace MyPortfolioWebsite.Pages.Dashboard
             userInDb.Gender = Profile.Gender;
             userInDb.Description = Profile.Description;
 
-            if (ProfilePictureFile != null && ProfilePictureFile.Length > 0)
+            if (!string.IsNullOrWhiteSpace(CroppedPhotoData))
             {
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-                var ext = Path.GetExtension(ProfilePictureFile.FileName).ToLowerInvariant();
-                const long maxBytes = 2 * 1024 * 1024;
+                const string prefix = "data:image/jpeg;base64,";
 
-                if (!allowed.Contains(ext))
+                if (!CroppedPhotoData.StartsWith(prefix, StringComparison.Ordinal))
                 {
-                    ModelState.AddModelError("ProfilePictureFile", "Only JPG, PNG or WEBP files are allowed.");
+                    ModelState.AddModelError("ProfilePictureFile", "Invalid cropped image data.");
                     return Page();
                 }
 
-                if (ProfilePictureFile.Length > maxBytes)
+                var base64 = CroppedPhotoData[prefix.Length..];
+                var imageBytes = Convert.FromBase64String(base64);
+
+                const long maxBytes = 2 * 1024 * 1024;
+
+                if (imageBytes.Length > maxBytes)
                 {
-                    ModelState.AddModelError("ProfilePictureFile", "File is too large (max 2MB).");
+                    ModelState.AddModelError("ProfilePictureFile", "File is too large after cropping. Max size is 2 MB.");
                     return Page();
                 }
 
                 var folder = Path.Combine(_env.WebRootPath, "uploads", "profiles");
                 Directory.CreateDirectory(folder);
 
-                var fileName = $"{Guid.NewGuid()}{ext}";
+                var fileName = $"{Guid.NewGuid()}.jpg";
                 var fullPath = Path.Combine(folder, fileName);
-                using var stream = System.IO.File.Create(fullPath);
-                ProfilePictureFile.CopyTo(stream);
+
+                System.IO.File.WriteAllBytes(fullPath, imageBytes);
 
                 DeleteLocalIfOwned(userInDb.ProfilePictureUrl);
                 userInDb.ProfilePictureUrl = $"/uploads/profiles/{fileName}";
             }
 
             _context.SaveChanges();
-            return RedirectToPage("/Dashboard/Index");
+            return RedirectToPage();
         }
 
         public IActionResult OnPostRemovePhoto()

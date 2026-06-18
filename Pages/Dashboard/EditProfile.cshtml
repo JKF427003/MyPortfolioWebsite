@@ -9,95 +9,137 @@
 
     if (!string.IsNullOrEmpty(displayPic) && displayPic.StartsWith("/uploads"))
     {
-        displayPic += "?v=" + DateTime.UtcNow.Ticks;   
+        displayPic += "?v=" + DateTime.UtcNow.Ticks;
     }
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="row justify-content-center">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h2 class="card-title text-primary mb-3"><i class="bi bi-gear me-2"></i>Edit Profile</h2>
-
-                    <form method="post" enctype="multipart/form-data" class="mt-4">
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label asp-for="Profile.FirstName">Name</label>
-                                    <input asp-for="Profile.FirstName" class="form-control" />
-                                    <span asp-validation-for="Profile.FirstName" class="text-danger"></span>
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label asp-for="Profile.LastName">Surname</label>
-                                    <input asp-for="Profile.LastName" class="form-control" />
-                                    <span asp-validation-for="Profile.LastName" class="text-danger"></span>
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label asp-for="Profile.Email">Primary Email</label>
-                                    <input asp-for="Profile.Email" class="form-control" readonly />
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label asp-for="Profile.AlternateEmail">Alternate Email</label>
-                                    <input asp-for="Profile.AlternateEmail" class="form-control" />
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label asp-for="Profile.DateOfBirth">Date of Birth</label>
-                                    <input asp-for="Profile.DateOfBirth" type="date" class="form-control" />
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label asp-for="Profile.Gender">Gender</label>
-                                    <select asp-for="Profile.Gender" class="form-control">
-                                        <option value="">-- Select Gender --</option>
-                                        <option>Male</option>
-                                        <option>Female</option>
-                                        <option>Unspecified</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label asp-for="Profile.Description">Description</label>
-                                    <textarea asp-for="Profile.Description" class="form-control"></textarea>
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label asp-for="Profile.AccountCreated">Account Created</label>
-                                    <input value="@Model.Profile.AccountCreated.ToString("yyyy-MM-dd")" class="form-control" readonly />
-                                </div>
-
-                                <div class="col-md-6 text-center">
-                                    <label>Profile Picture</label>
-                                    <div class="mb-2">
-                                        <img src="@Model.Profile.ProfilePictureUrl" class="rounded-circle shadow" width="150" height="150" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <input type="file" name="ProfilePictureFile" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
-                                        <div class="form-text">JPG/JPEG/PNG/WEBP, max 2 MB</div>
-                                    </div>
-                                    <div class="d-flex gap-2 justify-content-center">
-                                        <button type="submit" asp-page-handler="RemovePhoto" class="btn btn-outline-danger">Remove Photo</button>
-                                        <button type="submit" asp-page-handler="UseDefaultPhoto" class="btn btn-outline-secondary">Use Default</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </div>
-                        </div>
-                    </form>
-
-                </div>
+<div class="profile-page">
+    <div class="profile-header">
+        <div class="profile-title">
+            <span class="profile-icon">
+                <i class="bi bi-person-gear"></i>
+            </span>
+            <div>
+                <p class="eyebrow">Dashboard</p>
+                <h1>Edit profile</h1>
+                <p class="profile-subtitle">Manage your personal details, contact information, and portfolio photo.</p>
             </div>
         </div>
     </div>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="profile-panel">
+                    <section class="settings-section">
+                        <h2>Personal details</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Profile.FirstName" class="form-label">Name</label>
+                                <input asp-for="Profile.FirstName" class="form-control" />
+                                <span asp-validation-for="Profile.FirstName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Profile.LastName" class="form-label">Surname</label>
+                                <input asp-for="Profile.LastName" class="form-control" />
+                                <span asp-validation-for="Profile.LastName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Profile.DateOfBirth" class="form-label">Date of birth</label>
+                                <input asp-for="Profile.DateOfBirth" type="date" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Profile.Gender" class="form-label">Gender</label>
+                                <select asp-for="Profile.Gender" class="form-select">
+                                    <option value="">Select gender</option>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                    <option>Unspecified</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="settings-section">
+                        <h2>Contact</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Profile.Email" class="form-label">Primary email</label>
+                                <input asp-for="Profile.Email" class="form-control" readonly />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Profile.AlternateEmail" class="form-label">Alternate email</label>
+                                <input asp-for="Profile.AlternateEmail" class="form-control" />
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="settings-section">
+                        <h2>About</h2>
+
+                        <div class="mb-3">
+                            <label asp-for="Profile.Description" class="form-label">Description</label>
+                            <textarea asp-for="Profile.Description" class="form-control" rows="5"></textarea>
+                        </div>
+
+                        <div>
+                            <label asp-for="Profile.AccountCreated" class="form-label">Account created</label>
+                            <input value="@Model.Profile.AccountCreated.ToString("yyyy-MM-dd")" class="form-control" readonly />
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <aside class="profile-photo-panel">
+                    <h2>Profile photo</h2>
+
+                    <div class="profile-photo-wrap">
+                        <img src="@displayPic" class="profile-photo-preview" alt="Profile picture" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Upload new photo</label>
+                        <input id="profilePhotoInput" type="file" name="ProfilePictureFile" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
+                        <input id="croppedPhotoData" type="hidden" name="CroppedPhotoData" />
+
+                        <div id="photoEditor" class="photo-editor d-none">
+                            <img id="photoEditorImage" class="photo-editor-image" alt="Selected profile preview" />
+                        </div>
+                        <div class="form-text">JPG, PNG, or WEBP. Maximum size 2 MB.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check2 me-1"></i>Save changes
+                        </button>
+
+                        <button type="submit" asp-page-handler="UseDefaultPhoto" class="btn btn-outline-secondary">
+                            Use default photo
+                        </button>
+
+                        <button type="submit" asp-page-handler="RemovePhoto" class="btn btn-outline-danger">
+                            Remove photo
+                        </button>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </form>
 </div>
 
-@section scripts {
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+}
+
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <script src="~/js/edit-profile.js" asp-append-version="true"></script>
 }
