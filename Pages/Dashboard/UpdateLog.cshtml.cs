@@ -8,8 +8,8 @@ namespace MyPortfolioWebsite.Pages.Dashboard
     {
         private readonly IVersionService _versionService;
 
-        public string CurrentVersion { get; private set; }
-        public List<string> Changelog { get; private set; }
+        public string CurrentVersion { get; private set; } = "";
+        public List<string> Changelog { get; private set; } = new();
 
         public UpdateLogModel(IVersionService versionService)
         {
