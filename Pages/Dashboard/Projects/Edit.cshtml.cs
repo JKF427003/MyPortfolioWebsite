@@ -21,12 +21,14 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
         public Project Project { get; set; } = new();
         [BindProperty]
         public IFormFile? CoverImageFile { get; set; }
+        [BindProperty]
+        public List<IFormFile> GalleryImageFiles { get; set; } = new();
 
         public IActionResult OnGet(int id)
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
 
-            var project = _context.Projects.Include(p => p.AppUser).FirstOrDefault(p => p.Id == id && p.AppUser.Email == email);
+            var project = _context.Projects.Include(p => p.AppUser).Include(p => p.Images).FirstOrDefault(p => p.Id == id && p.AppUser.Email == email);
 
             if (project == null)
             {
@@ -41,7 +43,7 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
 
-            var projectInDb = _context.Projects.Include(p => p.AppUser).FirstOrDefault(p => p.Id == Project.Id && p.AppUser.Email == email);
+            var projectInDb = _context.Projects.Include(p => p.AppUser).Include(p => p.Images).FirstOrDefault(p => p.Id == Project.Id && p.AppUser.Email == email);
 
             if (projectInDb == null)
             {
@@ -58,16 +60,47 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
 
             if (CoverImageFile != null && CoverImageFile.Length > 0)
             {
+                var coverImageUrl = SaveProjectImage(CoverImageFile, nameof(CoverImageFile));
+
+                if (coverImageUrl == null)
+                {
+                    Project = projectInDb;
+                    return Page();
+                }
+
                 DeleteLocalIfOwned(projectInDb.CoverImageUrl);
-                projectInDb.CoverImageUrl = SaveProjectImage(CoverImageFile);
+                projectInDb.CoverImageUrl = coverImageUrl;
+            }
+
+            foreach (var imageFile in GalleryImageFiles)
+            {
+                if (imageFile.Length == 0)
+                {
+                    continue;
+                }
+
+                var imageUrl = SaveProjectImage(imageFile, nameof(GalleryImageFiles));
+
+                if (imageUrl == null)
+                {
+                    Project = projectInDb;
+                    return Page();
+                }
+
+                projectInDb.Images.Add(new ProjectImage
+                {
+                    ImageUrl = imageUrl,
+                    IsCoverImage = false,
+                    UploadedAt = DateTime.UtcNow
+                });
             }
 
             _context.SaveChanges();
 
-            return RedirectToPage("/Dashboard/EditPortfolio");
+            return RedirectToPage(new { id = projectInDb.Id });
         }
 
-        private string SaveProjectImage(IFormFile imageFile)
+        private string? SaveProjectImage(IFormFile imageFile, string modelStateKey)
         {
             var allowed = new[] { ".jpg", ".jpeg", ".png", ".webp" };
             var ext = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
@@ -75,12 +108,14 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
 
             if (!allowed.Contains(ext))
             {
-                throw new InvalidOperationException("Only JPG, PNG, or WEBP files are allowed.");
+                ModelState.AddModelError(modelStateKey, "Only JPG, PNG, or WEBP files are allowed.");
+                return null;
             }
 
             if (imageFile.Length > maxBytes)
             {
-                throw new InvalidOperationException("File is too large. Maximum size is 4 MB.");
+                ModelState.AddModelError(modelStateKey, "File is too large. Maximum size is 4 MB.");
+                return null;
             }
 
             var folder = Path.Combine("wwwroot", "uploads", "projects");
@@ -111,6 +146,34 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
                     try { System.IO.File.Delete(physical); } catch { }
                 }
             }
+        }
+
+        public IActionResult OnPostRemoveGalleryImage(int id, int imageId)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            var project = _context.Projects
+                .Include(p => p.AppUser)
+                .Include(p => p.Images)
+                .FirstOrDefault(p => p.Id == id && p.AppUser.Email == email);
+
+            if (project == null)
+            {
+                return RedirectToPage("/Dashboard/EditPortfolio");
+            }
+
+            var image = project.Images.FirstOrDefault(i => i.Id == imageId);
+
+            if (image == null)
+            {
+                return RedirectToPage(new { id });
+            }
+
+            DeleteLocalIfOwned(image.ImageUrl);
+            _context.ProjectImages.Remove(image);
+            _context.SaveChanges();
+
+            return RedirectToPage(new { id });
         }
     }
 }

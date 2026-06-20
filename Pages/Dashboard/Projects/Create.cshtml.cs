@@ -47,7 +47,14 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
 
             if (CoverImageFile != null && CoverImageFile.Length > 0)
             {
-                Project.CoverImageUrl = SaveProjectImage(CoverImageFile);
+                var coverImageUrl = SaveProjectImage(CoverImageFile, nameof(CoverImageFile));
+
+                if (coverImageUrl == null)
+                {
+                    return Page();
+                }
+
+                Project.CoverImageUrl = coverImageUrl;
             }
 
             foreach (var imageFile in GalleryImageFiles)
@@ -57,9 +64,16 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
                     continue;
                 }
 
+                var imageUrl = SaveProjectImage(imageFile, nameof(GalleryImageFiles));
+
+                if (imageUrl == null)
+                {
+                    return Page();
+                }
+
                 Project.Images.Add(new ProjectImage
                 {
-                    ImageUrl = SaveProjectImage(imageFile),
+                    ImageUrl = imageUrl,
                     IsCoverImage = false,
                     UploadedAt = DateTime.UtcNow
                 });
@@ -75,7 +89,7 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
             return RedirectToPage("/Dashboard/EditPortfolio");
         }
 
-        private string SaveProjectImage(IFormFile imageFile)
+        private string? SaveProjectImage(IFormFile imageFile, string modelStateKey)
         {
             var allowed = new[] { ".jpg", ".jpeg", ".png", ".webp" };
             var ext = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
@@ -83,12 +97,14 @@ namespace MyPortfolioWebsite.Pages.Dashboard.Projects
 
             if (!allowed.Contains(ext))
             {
-                throw new InvalidOperationException("Only JPG, PNG, or WEBP files are allowed.");
+                ModelState.AddModelError(modelStateKey, "Only JPG, PNG, or WEBP files are allowed.");
+                return null;
             }
 
             if (imageFile.Length > maxBytes)
             {
-                throw new InvalidOperationException("File is too large. Maximum size is 4 MB.");
+                ModelState.AddModelError(modelStateKey, "File is too large. Maximum size is 4 MB.");
+                return null;
             }
 
             var folder = Path.Combine("wwwroot", "uploads", "projects");

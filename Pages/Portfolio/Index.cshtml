@@ -1,0 +1,160 @@
+﻿@page "{slug}"
+@model MyPortfolioWebsite.Pages.Portfolio.IndexModel
+@{
+    ViewData["Title"] = Model.UserProfile == null
+        ? "Portfolio not found"
+        : $"{Model.UserProfile.FirstName} {Model.UserProfile.LastName}";
+}
+
+@if (Model.UserProfile == null)
+{
+    <main class="public-page">
+        <section class="public-panel public-empty">
+            <h1>Portfolio not found</h1>
+            <p>This portfolio is unavailable or has not been made public.</p>
+        </section>
+    </main>
+}
+else
+{
+    <main class="public-page">
+        <section class="public-hero">
+            <div class="public-hero-content">
+                <p class="eyebrow">Portfolio</p>
+                <h1>@Model.UserProfile.FirstName @Model.UserProfile.LastName</h1>
+
+                @if (!string.IsNullOrWhiteSpace(Model.UserProfile.PortfolioHeadline))
+                {
+                    <p class="public-headline">@Model.UserProfile.PortfolioHeadline</p>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.UserProfile.JobTitle))
+                {
+                    <p class="public-headline">@Model.UserProfile.JobTitle</p>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.UserProfile.Description))
+                {
+                    <p class="public-description">@Model.UserProfile.Description</p>
+                }
+
+                <div class="public-link-row">
+                    @if (!string.IsNullOrWhiteSpace(Model.UserProfile.GitHubUrl))
+                    {
+                        <a href="@Model.UserProfile.GitHubUrl" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.UserProfile.LinkedInUrl))
+                    {
+                        <a href="@Model.UserProfile.LinkedInUrl" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-linkedin"></i> LinkedIn
+                        </a>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.UserProfile.Location))
+                    {
+                        <span>
+                            <i class="bi bi-geo-alt"></i> @Model.UserProfile.Location
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <div class="public-hero-photo">
+                <img src="@(Model.UserProfile.ProfilePictureUrl ?? "/images/default-profile.png")" alt="@Model.UserProfile.FirstName @Model.UserProfile.LastName" />
+            </div>
+        </section>
+
+        @if (Model.DisplaySkills.Any())
+        {
+            <section class="public-section public-skills-section">
+                <div class="public-section-heading">
+                    <p class="eyebrow">Toolkit</p>
+                    <h2>Skills</h2>
+                </div>
+
+                <div class="public-skill-list">
+                    @foreach (var skill in Model.DisplaySkills)
+                    {
+                        <span class="public-chip">@skill</span>
+                    }
+                </div>
+            </section>
+        }
+
+        <section class="public-section">
+            <div class="public-section-heading">
+                <p class="eyebrow">Selected work</p>
+                <h2>Projects</h2>
+            </div>
+
+            @if (!Model.Projects.Any())
+            {
+                <p class="public-muted">No projects have been added yet.</p>
+            }
+            else
+            {
+                <div class="public-project-grid">
+                    @foreach (var project in Model.Projects)
+                    {
+                        <article class="public-project-card">
+                            <a class="public-project-image" asp-page="/Portfolio/Projects/Details" asp-route-slug="@Model.UserProfile.PublicSlug" asp-route-id="@project.Id" aria-label="View @project.Title project details">
+                                @if (!string.IsNullOrWhiteSpace(project.CoverImageUrl))
+                                {
+                                    <img src="@project.CoverImageUrl" alt="@project.Title" />
+                                }
+                                else
+                                {
+                                    <span class="public-project-placeholder">
+                                        <i class="bi bi-window"></i>
+                                    </span>
+                                }
+
+                                <span class="public-project-overlay">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                    View project
+                                </span>
+                            </a>
+
+                            <div class="public-project-body">
+                                <h3>@project.Title</h3>
+                                <p>@project.ShortSummary</p>
+
+                                @if (!string.IsNullOrWhiteSpace(project.ProgrammingLanguages))
+                                {
+                                    <div class="public-project-tech">
+                                        @foreach (var language in project.ProgrammingLanguages.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                                        {
+                                            <span class="public-chip">@language</span>
+                                        }
+                                    </div>
+                                }
+
+                                <div class="public-project-links">
+                                    <a asp-page="/Portfolio/Projects/Details" asp-route-slug="@Model.UserProfile.PublicSlug" asp-route-id="@project.Id">
+                                        Details
+                                    </a>
+
+                                    @if (!string.IsNullOrWhiteSpace(project.GitHubUrl))
+                                    {
+                                        <a href="@project.GitHubUrl" target="_blank" rel="noopener noreferrer">
+                                            <i class="bi bi-github"></i> GitHub
+                                        </a>
+                                    }
+
+                                    @if (!string.IsNullOrWhiteSpace(project.LiveDemoUrl))
+                                    {
+                                        <a href="@project.LiveDemoUrl" target="_blank" rel="noopener noreferrer">
+                                            <i class="bi bi-box-arrow-up-right"></i> Live demo
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+    </main>
+}

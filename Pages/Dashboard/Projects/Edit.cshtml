@@ -82,9 +82,41 @@
                     <label class="form-label">Replace cover image</label>
                     <input type="file" name="CoverImageFile" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
                     <div class="form-text">Optional. Uploading a new image replaces the current cover.</div>
+                    <span asp-validation-for="CoverImageFile" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Add gallery images</label>
+                    <input type="file" name="GalleryImageFiles" class="form-control" accept=".jpg,.jpeg,.png,.webp" multiple />
+                    <div class="form-text">Optional. Add more screenshots or supporting images.</div>
+                    <span asp-validation-for="GalleryImageFiles" class="text-danger"></span>
                 </div>
             </div>
         </section>
+
+        @if (Model.Project.Images.Any())
+        {
+            <section class="settings-section">
+                <h2>Gallery images</h2>
+
+                <div class="project-gallery-manage">
+                    @foreach (var image in Model.Project.Images)
+                    {
+                        <div class="project-gallery-manage-item">
+                            <img src="@image.ImageUrl" alt="@Model.Project.Title gallery image" />
+
+                            <button type="submit"
+                                    asp-page-handler="RemoveGalleryImage"
+                                    asp-route-id="@Model.Project.Id"
+                                    asp-route-imageId="@image.Id"
+                                    class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i>Remove
+                            </button>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
 
         <div class="d-flex justify-content-end gap-2">
             <a asp-page="/Dashboard/EditPortfolio" class="btn btn-outline-secondary">Cancel</a>

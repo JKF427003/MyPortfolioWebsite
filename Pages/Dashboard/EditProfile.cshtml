@@ -93,6 +93,54 @@
                     </section>
 
                     <section class="settings-section">
+                        <h2>Public portfolio</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Profile.PublicSlug" class="form-label">Public link name</label>
+                                <input asp-for="Profile.PublicSlug" class="form-control" placeholder="jacob-kyle-farrugia" />
+                                <span asp-validation-for="Profile.PublicSlug" class="text-danger"></span>
+                                <div class="form-text">Use lowercase letters, numbers, and hyphens.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Profile.PortfolioHeadline" class="form-label">Portfolio headline</label>
+                                <input asp-for="Profile.PortfolioHeadline" class="form-control" placeholder="Junior .NET Developer" />
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input asp-for="Profile.IsPortfolioPublic" class="form-check-input" type="checkbox" />
+                                    <label asp-for="Profile.IsPortfolioPublic" class="form-check-label">
+                                        Make my portfolio public
+                                    </label>
+                                </div>
+                            </div>
+
+                            @if (Model.Profile.IsPortfolioPublic && !string.IsNullOrWhiteSpace(Model.PublicPortfolioUrl))
+                            {
+                                <div class="col-12">
+                                    <div class="public-link-tools">
+                                        <div>
+                                            <span class="public-link-label">Public URL</span>
+                                            <a href="@Model.PublicPortfolioUrl" target="_blank" rel="noopener noreferrer">@Model.PublicPortfolioUrl</a>
+                                        </div>
+
+                                        <div class="public-link-actions">
+                                            <a class="btn btn-outline-primary btn-sm" href="@Model.PublicPortfolioUrl" target="_blank" rel="noopener noreferrer">
+                                                <i class="bi bi-box-arrow-up-right me-1"></i>View
+                                            </a>
+                                            <button class="btn btn-outline-secondary btn-sm" type="button" data-copy-url="@Model.PublicPortfolioUrl">
+                                                <i class="bi bi-clipboard me-1"></i>Copy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </section>
+
+                    <section class="settings-section">
                         <h2>About</h2>
 
                         <div class="mb-3">
@@ -100,6 +148,34 @@
                             <textarea asp-for="Profile.Description" class="form-control" rows="5"></textarea>
                         </div>
 
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Profile.JobTitle" class="form-label">Job title</label>
+                                <input asp-for="Profile.JobTitle" class="form-control" placeholder="Junior .NET Developer" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Profile.Location" class="form-label">Location</label>
+                                <input asp-for="Profile.Location" class="form-control" placeholder="Malta" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Profile.GitHubUrl" class="form-label">GitHub URL</label>
+                                <input asp-for="Profile.GitHubUrl" class="form-control" placeholder="https://github.com/username" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Profile.LinkedInUrl" class="form-label">LinkedIn URL</label>
+                                <input asp-for="Profile.LinkedInUrl" class="form-control" placeholder="https://linkedin.com/in/username" />
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Profile.Skills" class="form-label">Skills</label>
+                                <input asp-for="Profile.Skills" class="form-control" placeholder="C#, ASP.NET Core, SQL Server, JavaScript" />
+                                <div class="form-text">Separate skills with commas. Leave blank to use programming languages from your projects automatically.</div>
+                            </div>
+                        </div>
+                        
                         <div>
                             <label asp-for="Profile.AccountCreated" class="form-label">Account created</label>
                             <input value="@Model.Profile.AccountCreated.ToString("yyyy-MM-dd")" class="form-control" readonly />

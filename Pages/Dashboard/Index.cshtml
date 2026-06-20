@@ -19,6 +19,38 @@
         </div>
     </div>
 
+    <div class="dashboard-stat-grid">
+        <div class="dashboard-stat-card">
+            <span class="dashboard-stat-icon">
+                <i class="bi bi-folder2-open"></i>
+            </span>
+            <div>
+                <strong>@Model.TotalProjects</strong>
+                <span>Total projects</span>
+            </div>
+        </div>
+
+        <div class="dashboard-stat-card">
+            <span class="dashboard-stat-icon">
+                <i class="bi bi-stars"></i>
+            </span>
+            <div>
+                <strong>@Model.LatestProjectTitle</strong>
+                <span>Recently Updated</span>
+            </div>
+        </div>
+
+        <div class="dashboard-stat-card">
+            <span class="dashboard-stat-icon">
+                <i class="bi bi-envelope-check"></i>
+            </span>
+            <div>
+                <strong>@(Model.HasVerifiedAlternateEmail ? "Verified" : "Pending")</strong>
+                <span>Alternate email</span>
+            </div>
+        </div>
+    </div>
+
     @if (!Model.Projects.Any())
     {
         <div class="profile-panel dashboard-empty">

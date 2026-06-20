@@ -21,6 +21,9 @@ namespace MyPortfolioWebsite.Pages.Dashboard
         public List<Project> Projects { get; set; } = new();
         public string LanguageLabelsJson { get; set; } = "[]";
         public string LanguageCountsJson { get; set; } = "[]";
+        public int TotalProjects { get; set; }
+        public string LatestProjectTitle { get; set; } = "No projects yet";
+        public bool HasVerifiedAlternateEmail { get; set; }
 
         public void OnGet()
         {
@@ -34,6 +37,12 @@ namespace MyPortfolioWebsite.Pages.Dashboard
 
             LanguageLabelsJson = JsonSerializer.Serialize(languageCounts.Keys);
             LanguageCountsJson = JsonSerializer.Serialize(languageCounts.Values);
+
+            TotalProjects = Projects.Count;
+            LatestProjectTitle = Projects.FirstOrDefault()?.Title ?? "No projects yet";
+
+            var user = _context.AppUsers.FirstOrDefault(u => u.Email == email);
+            HasVerifiedAlternateEmail = user?.IsAlternateEmailVerified == true;
         }
     }
 }

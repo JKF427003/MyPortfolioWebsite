@@ -7,7 +7,7 @@ if (featuredProjects.length > 1) {
         featuredProjects[activeIndex].classList.remove("is-active");
         activeIndex = (activeIndex + 1) % featuredProjects.length;
         featuredProjects[activeIndex].classList.add("is-active");
-    }, 5000);
+    }, 9000);
 }
 
 const languageChart = document.getElementById("languageChart");

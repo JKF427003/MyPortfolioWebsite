@@ -1,0 +1,104 @@
+@page "/Portfolio/{slug}/Projects/{id:int}"
+@model MyPortfolioWebsite.Pages.Portfolio.Projects.DetailsModel
+@{
+    ViewData["Title"] = Model.Project == null
+        ? "Project not found"
+        : $"{Model.Project.Title} - {Model.UserProfile?.FirstName} {Model.UserProfile?.LastName}";
+}
+
+@if (Model.UserProfile == null || Model.Project == null)
+{
+    <main class="public-page">
+        <section class="public-panel public-empty">
+            <h1>Project not found</h1>
+            <p>This project is unavailable or has not been made public.</p>
+        </section>
+    </main>
+}
+else
+{
+    <main class="public-page public-detail-page">
+        <a class="public-back-link" asp-page="/Portfolio/Index" asp-route-slug="@Model.UserProfile.PublicSlug">
+            <i class="bi bi-arrow-left"></i> Back to portfolio
+        </a>
+
+        <section class="public-project-detail">
+            <div class="public-project-detail-content">
+                <p class="eyebrow">Project</p>
+                <h1>@Model.Project.Title</h1>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Project.ShortSummary))
+                {
+                    <p class="public-headline">@Model.Project.ShortSummary</p>
+                }
+
+                @if (Model.ProjectLanguages.Any())
+                {
+                    <div class="public-project-tech">
+                        @foreach (var language in Model.ProjectLanguages)
+                        {
+                            <span class="public-chip">@language</span>
+                        }
+                    </div>
+                }
+
+                <div class="public-project-links public-detail-actions">
+                    @if (!string.IsNullOrWhiteSpace(Model.Project.GitHubUrl))
+                    {
+                        <a href="@Model.Project.GitHubUrl" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Project.LiveDemoUrl))
+                    {
+                        <a href="@Model.Project.LiveDemoUrl" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-box-arrow-up-right"></i> Live demo
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="public-project-detail-cover">
+                @if (!string.IsNullOrWhiteSpace(Model.Project.CoverImageUrl))
+                {
+                    <img src="@Model.Project.CoverImageUrl" alt="@Model.Project.Title" />
+                }
+                else
+                {
+                    <span class="public-project-placeholder">
+                        <i class="bi bi-window"></i>
+                    </span>
+                }
+            </div>
+        </section>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Project.Description))
+        {
+            <section class="public-section">
+                <div class="public-section-heading">
+                    <p class="eyebrow">Overview</p>
+                    <h2>About this project</h2>
+                </div>
+                <p class="public-project-description">@Model.Project.Description</p>
+            </section>
+        }
+
+        @if (Model.Project.Images.Any())
+        {
+            <section class="public-section">
+                <div class="public-section-heading">
+                    <p class="eyebrow">Gallery</p>
+                    <h2>Project images</h2>
+                </div>
+
+                <div class="public-gallery-grid">
+                    @foreach (var image in Model.Project.Images.OrderBy(i => i.UploadedAt))
+                    {
+                        <img src="@image.ImageUrl" alt="@Model.Project.Title gallery image" />
+                    }
+                </div>
+            </section>
+        }
+    </main>
+}

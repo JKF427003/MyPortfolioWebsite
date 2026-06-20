@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyPortfolioWebsite.Data;
 
@@ -11,9 +12,11 @@ using MyPortfolioWebsite.Data;
 namespace MyPortfolioWebsite.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260620201934_AddProfilePortfolioFields")]
+    partial class AddProfilePortfolioFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,9 +79,6 @@ namespace MyPortfolioWebsite.Migrations
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsPortfolioPublic")
-                        .HasColumnType("bit");
-
                     b.Property<string>("JobTitle")
                         .HasColumnType("nvarchar(max)");
 
@@ -97,13 +97,7 @@ namespace MyPortfolioWebsite.Migrations
                     b.Property<string>("PendingAlternateEmail")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PortfolioHeadline")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProfilePictureUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PublicSlug")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Skills")

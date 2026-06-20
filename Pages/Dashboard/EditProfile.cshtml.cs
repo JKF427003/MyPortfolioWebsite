@@ -6,6 +6,7 @@ using Microsoft.Identity.Client;
 using MyPortfolioWebsite.Data;
 using MyPortfolioWebsite.Models;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace MyPortfolioWebsite.Pages.Dashboard
 {
@@ -26,6 +27,7 @@ namespace MyPortfolioWebsite.Pages.Dashboard
         [BindProperty] public AppUser Profile { get; set; } = default!;
         [BindProperty] public IFormFile? ProfilePictureFile { get; set; }
         [BindProperty] public string? CroppedPhotoData { get; set; }
+        public string? PublicPortfolioUrl { get; set; }
 
         public IActionResult OnGet()
         {
@@ -54,14 +56,12 @@ namespace MyPortfolioWebsite.Pages.Dashboard
             }
 
             Profile = user;
+            SetPublicPortfolioUrl(Profile.PublicSlug);
             return Page();
         }
 
         public async Task<IActionResult> OnPost()
         {
-            if (!ModelState.IsValid)
-                return Page();
-
             var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
             if (string.IsNullOrWhiteSpace(email))
                 return RedirectToPage("/Account/Login");
@@ -69,6 +69,16 @@ namespace MyPortfolioWebsite.Pages.Dashboard
             var userInDb = _context.AppUsers.FirstOrDefault(u => u.Email == email);
             if (userInDb == null)
                 return RedirectToPage("/Dashboard/EditProfile");
+
+            Profile.PublicSlug = NormalizeSlug(Profile.PublicSlug);
+            ValidatePublicSlug(userInDb.Id);
+
+            if (!ModelState.IsValid)
+            {
+                PopulateDisplayFields(userInDb);
+                SetPublicPortfolioUrl(Profile.PublicSlug);
+                return Page();
+            }
 
             userInDb.FirstName = Profile.FirstName;
             userInDb.LastName = Profile.LastName;
@@ -100,6 +110,14 @@ namespace MyPortfolioWebsite.Pages.Dashboard
             userInDb.DateOfBirth = Profile.DateOfBirth;
             userInDb.Gender = Profile.Gender;
             userInDb.Description = Profile.Description;
+            userInDb.JobTitle = Profile.JobTitle;
+            userInDb.Location = Profile.Location;
+            userInDb.GitHubUrl = Profile.GitHubUrl;
+            userInDb.LinkedInUrl = Profile.LinkedInUrl;
+            userInDb.Skills = Profile.Skills;
+            userInDb.PublicSlug = Profile.PublicSlug;
+            userInDb.PortfolioHeadline = Profile.PortfolioHeadline;
+            userInDb.IsPortfolioPublic = Profile.IsPortfolioPublic;
 
             if (!string.IsNullOrWhiteSpace(CroppedPhotoData))
             {
@@ -108,6 +126,8 @@ namespace MyPortfolioWebsite.Pages.Dashboard
                 if (!CroppedPhotoData.StartsWith(prefix, StringComparison.Ordinal))
                 {
                     ModelState.AddModelError("ProfilePictureFile", "Invalid cropped image data.");
+                    PopulateDisplayFields(userInDb);
+                    SetPublicPortfolioUrl(Profile.PublicSlug);
                     return Page();
                 }
 
@@ -119,6 +139,8 @@ namespace MyPortfolioWebsite.Pages.Dashboard
                 if (imageBytes.Length > maxBytes)
                 {
                     ModelState.AddModelError("ProfilePictureFile", "File is too large after cropping. Max size is 2 MB.");
+                    PopulateDisplayFields(userInDb);
+                    SetPublicPortfolioUrl(Profile.PublicSlug);
                     return Page();
                 }
 
@@ -183,6 +205,65 @@ namespace MyPortfolioWebsite.Pages.Dashboard
                     try { System.IO.File.Delete(physical); } catch { }
                 }
             }
+        }
+
+        private static string? NormalizeSlug(string? slug)
+        {
+            return string.IsNullOrWhiteSpace(slug)
+                ? null
+                : slug.Trim().ToLowerInvariant();
+        }
+
+        private void ValidatePublicSlug(int currentUserId)
+        {
+            if (Profile.IsPortfolioPublic && string.IsNullOrWhiteSpace(Profile.PublicSlug))
+            {
+                ModelState.AddModelError("Profile.PublicSlug", "A public link name is required when your portfolio is public.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Profile.PublicSlug))
+            {
+                return;
+            }
+
+            if (!Regex.IsMatch(Profile.PublicSlug, "^[a-z0-9]+(?:-[a-z0-9]+)*$"))
+            {
+                ModelState.AddModelError("Profile.PublicSlug", "Use lowercase letters, numbers, and single hyphens only.");
+                return;
+            }
+
+            var slugExists = _context.AppUsers.Any(u => u.Id != currentUserId && u.PublicSlug == Profile.PublicSlug);
+            if (slugExists)
+            {
+                ModelState.AddModelError("Profile.PublicSlug", "This public link name is already taken.");
+            }
+        }
+
+        private void SetPublicPortfolioUrl(string? slug)
+        {
+            if (string.IsNullOrWhiteSpace(slug))
+            {
+                PublicPortfolioUrl = null;
+                return;
+            }
+
+            PublicPortfolioUrl = Url.Page(
+                "/Portfolio/Index",
+                pageHandler: null,
+                values: new { slug },
+                protocol: Request.Scheme);
+        }
+
+        private void PopulateDisplayFields(AppUser user)
+        {
+            Profile.Id = user.Id;
+            Profile.Email = user.Email;
+            Profile.ProfilePictureUrl = user.ProfilePictureUrl;
+            Profile.AccountCreated = user.AccountCreated;
+            Profile.IsEmailVerified = user.IsEmailVerified;
+            Profile.IsAlternateEmailVerified = user.IsAlternateEmailVerified;
+            Profile.PendingAlternateEmail = user.PendingAlternateEmail;
         }
     }
 }

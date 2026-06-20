@@ -73,3 +73,22 @@ window.addEventListener("storage", function (event) {
         window.location.reload();
     }
 });
+
+document.querySelectorAll("[data-copy-url]").forEach(function (button) {
+    button.addEventListener("click", async function () {
+        const url = button.getAttribute("data-copy-url");
+
+        if (!url || !navigator.clipboard) {
+            return;
+        }
+
+        await navigator.clipboard.writeText(url);
+
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="bi bi-check2 me-1"></i>Copied';
+
+        window.setTimeout(function () {
+            button.innerHTML = originalText;
+        }, 1800);
+    });
+});
