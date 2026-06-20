@@ -1,0 +1,91 @@
+﻿@page "{id:int}"
+@model MyPortfolioWebsite.Pages.Dashboard.Projects.DetailsModel
+@{
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Project Details";
+}
+
+<div class="profile-page">
+    <div class="profile-header">
+        <div class="profile-title">
+            <span class="profile-icon">
+                <i class="bi bi-folder2-open"></i>
+            </span>
+            <div>
+                <p class="eyebrow">Portfolio</p>
+                <h1>@Model.Project.Title</h1>
+                <p class="profile-subtitle">@Model.Project.ShortSummary</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="project-details-layout">
+        <section class="profile-panel">
+            @if (!string.IsNullOrWhiteSpace(Model.Project.CoverImageUrl))
+            {
+                <div class="project-details-cover">
+                    <img src="@Model.Project.CoverImageUrl" alt="@Model.Project.Title" />
+                </div>
+            }
+
+            <div class="settings-section">
+                <h2>Description</h2>
+                <p class="project-details-description">@Model.Project.Description</p>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Project.ProgrammingLanguages))
+            {
+                <div class="settings-section">
+                    <h2>Technologies</h2>
+                    <span class="project-chip">@Model.Project.ProgrammingLanguages</span>
+                </div>
+            }
+
+            @if (Model.Project.Images.Any())
+            {
+                <div class="settings-section">
+                    <h2>Gallery</h2>
+
+                    <div class="project-gallery">
+                        @foreach (var image in Model.Project.Images)
+                        {
+                            <img src="@image.ImageUrl" alt="@Model.Project.Title gallery image" />
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+
+        <aside class="profile-photo-panel">
+            <h2>Project actions</h2>
+
+            <div class="d-grid gap-2">
+                @if (!string.IsNullOrWhiteSpace(Model.Project.GitHubUrl))
+                {
+                    <a href="@Model.Project.GitHubUrl" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+                        <i class="bi bi-github me-1"></i>Open GitHub
+                    </a>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.Project.LiveDemoUrl))
+                {
+                    <a href="@Model.Project.LiveDemoUrl" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>Open live demo
+                    </a>
+                }
+
+                <a asp-page="/Dashboard/Projects/Edit" asp-route-id="@Model.Project.Id" class="btn btn-primary">
+                    <i class="bi bi-pencil-square me-1"></i>Edit project
+                </a>
+
+                <a asp-page="/Dashboard/Projects/Delete" asp-route-id="@Model.Project.Id" class="btn btn-outline-danger">
+                    <i class="bi bi-trash me-1"></i>Delete project
+                </a>
+
+                <a asp-page="/Dashboard/EditPortfolio" class="btn btn-outline-secondary">
+                    Back to portfolio
+                </a>
+            </div>
+        </aside>
+    </div>
+</div>

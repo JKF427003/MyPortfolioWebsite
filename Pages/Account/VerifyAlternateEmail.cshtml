@@ -1,0 +1,26 @@
+﻿@page
+@model MyPortfolioWebsite.Pages.Account.VerifyAlternateEmailModel
+@{
+    Layout = User.Identity?.IsAuthenticated == true ? "~/Pages/Shared/_DashboardLayout.cshtml" : "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="verification-page">
+    <div class="verification-panel">
+        <span class="verification-icon">
+            <i class="bi bi-check2-circle"></i>
+        </span>
+
+        <h1>@Model.Message</h1>
+
+        <p class="verification-text">You can now return to your profile settings</p>
+
+        <a asp-page="/Dashboard/EditProfile" class="btn btn-primary"><i class="bi bi-arrow-left me-1"></i>Back to Edit Profile</a>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        localStorage.setItem("profile-email-verified", Date.now().toString());
+    </script>
+}

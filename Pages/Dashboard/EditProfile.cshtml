@@ -75,7 +75,19 @@
 
                             <div class="col-md-6">
                                 <label asp-for="Profile.AlternateEmail" class="form-label">Alternate email</label>
-                                <input asp-for="Profile.AlternateEmail" class="form-control" />
+                                <input name="Profile.AlternateEmail" value="@(Model.Profile.PendingAlternateEmail ?? Model.Profile.AlternateEmail)" class="form-control" />
+                                @if (!string.IsNullOrWhiteSpace(Model.Profile.PendingAlternateEmail))
+                                {
+                                    <div class="form-text text-warning">
+                                        Verification pending for @Model.Profile.PendingAlternateEmail
+                                    </div>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(Model.Profile.AlternateEmail) && Model.Profile.IsAlternateEmailVerified)
+                                {
+                                    <div class="form-text text-success">
+                                        Alternate email verified
+                                    </div>
+                                }
                             </div>
                         </div>
                     </section>

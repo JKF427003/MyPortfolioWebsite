@@ -1,0 +1,55 @@
+﻿@page "{id:int}"
+@model MyPortfolioWebsite.Pages.Dashboard.Projects.DeleteModel
+@{
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Delete Project";
+}
+
+<div class="profile-page">
+    <div class="profile-header">
+        <div class="profile-title">
+            <span class="profile-icon">
+                <i class="bi bi-trash"></i>
+            </span>
+            <div>
+                <p class="eyebrow">Portfolio</p>
+                <h1>Delete project</h1>
+                <p class="profile-subtitle">This action permanently removes the project and its uploaded images.</p>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" class="profile-panel">
+        <input type="hidden" asp-for="ProjectId" />
+        <input type="hidden" asp-for="ProjectTitle" />
+
+        <section class="settings-section">
+            <h2>@Model.ProjectTitle</h2>
+
+            <p class="text-muted">
+                To confirm deletion, type the project name exactly as shown below.
+            </p>
+
+            <div class="delete-confirm-name">
+                @Model.ProjectTitle
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ConfirmationTitle" class="form-label">Project name</label>
+                <input asp-for="ConfirmationTitle" class="form-control" autocomplete="off" />
+                <span asp-validation-for="ConfirmationTitle" class="text-danger"></span>
+            </div>
+        </section>
+
+        <div class="d-flex justify-content-end gap-2">
+            <a asp-page="/Dashboard/EditPortfolio" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-1"></i>Delete project
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

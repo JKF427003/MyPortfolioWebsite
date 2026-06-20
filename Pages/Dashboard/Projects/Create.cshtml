@@ -1,0 +1,91 @@
+﻿@page
+@model MyPortfolioWebsite.Pages.Dashboard.Projects.CreateModel
+@{
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Create Project";
+}
+
+<div class="profile-page">
+    <div class="profile-header">
+        <div class="profile-title">
+            <span class="profile-icon">
+                <i class="bi bi-plus-lg"></i>
+            </span>
+            <div>
+                <p class="eyebrow">Portfolio</p>
+                <h1>Create project</h1>
+                <p class="profile-subtitle">Add the details that will help visitors understand your work.</p>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="profile-panel">
+        <section class="settings-section">
+            <h2>Project details</h2>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Project.Title" class="form-label">Project name</label>
+                    <input asp-for="Project.Title" class="form-control" />
+                    <span asp-validation-for="Project.Title" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Project.ProgrammingLanguages" class="form-label">Programming languages</label>
+                    <input asp-for="Project.ProgrammingLanguages" class="form-control" placeholder="C#, ASP.NET, SQL Server" />
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Project.ShortSummary" class="form-label">Short summary</label>
+                    <input asp-for="Project.ShortSummary" class="form-control" />
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Project.Description" class="form-label">Description</label>
+                    <textarea asp-for="Project.Description" class="form-control" rows="6"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <section class="settings-section">
+            <h2>Links and media</h2>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Project.GitHubUrl" class="form-label">GitHub link</label>
+                    <input asp-for="Project.GitHubUrl" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Project.LiveDemoUrl" class="form-label">Live demo link</label>
+                    <input asp-for="Project.LiveDemoUrl" class="form-control" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Cover image</label>
+                    <input type="file" name="CoverImageFile" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
+                    <div class="form-text">Optional. This image will be shown on the project card.</div>
+                    <span asp-validation-for="CoverImageFile" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Project gallery images</label>
+                    <input type="file" name="GalleryImageFiles" class="form-control" accept=".jpg,.jpeg,.png,.webp" multiple />
+                    <div class="form-text">Optional. You can upload multiple images for this project.</div>
+                    <span asp-validation-for="GalleryImageFiles" class="text-danger"></span>
+                </div>
+            </div>
+        </section>
+
+        <div class="d-flex justify-content-end gap-2">
+            <a asp-page="/Dashboard/EditPortfolio" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check2 me-1"></i>Save project
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

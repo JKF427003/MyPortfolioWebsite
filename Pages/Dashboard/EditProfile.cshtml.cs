@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using MyPortfolioWebsite.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Identity.Client;
@@ -13,11 +14,13 @@ namespace MyPortfolioWebsite.Pages.Dashboard
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IEmailSender _emailSender;
 
-        public EditProfileModel(AppDbContext context, IWebHostEnvironment env)
+        public EditProfileModel(AppDbContext context, IWebHostEnvironment env, IEmailSender emailSender)
         {
             _context = context;
             _env = env;
+            _emailSender = emailSender;
         }
 
         [BindProperty] public AppUser Profile { get; set; } = default!;
@@ -42,7 +45,9 @@ namespace MyPortfolioWebsite.Pages.Dashboard
                     LastName = HttpContext.User.FindFirst(ClaimTypes.Surname)?.Value ?? HttpContext.User.FindFirst("family_name")?.Value,
                     Name = HttpContext.User.Identity?.Name,
                     ProfilePictureUrl = HttpContext.User.FindFirst("urn:google:picture")?.Value,
-                    AccountCreated = DateTime.UtcNow
+                    AccountCreated = DateTime.UtcNow,
+                    IsEmailVerified = true,
+                    EmailVerifiedAt = DateTime.UtcNow,
                 };
                 _context.AppUsers.Add(user);
                 _context.SaveChanges();
@@ -52,7 +57,7 @@ namespace MyPortfolioWebsite.Pages.Dashboard
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
             if (!ModelState.IsValid)
                 return Page();
@@ -67,7 +72,31 @@ namespace MyPortfolioWebsite.Pages.Dashboard
 
             userInDb.FirstName = Profile.FirstName;
             userInDb.LastName = Profile.LastName;
-            userInDb.AlternateEmail = Profile.AlternateEmail;
+
+            var submittedAlternateEmail = Profile.AlternateEmail?.Trim();
+
+            if (!string.Equals(submittedAlternateEmail, userInDb.AlternateEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                userInDb.PendingAlternateEmail = submittedAlternateEmail;
+                userInDb.IsAlternateEmailVerified = false;
+                userInDb.AlternateEmailVerificationToken = Guid.NewGuid().ToString("N");
+                userInDb.AlternateEmailVerificationTokenExpires = DateTime.UtcNow.AddHours(24);
+
+                if (!string.IsNullOrWhiteSpace(submittedAlternateEmail))
+                {
+                    var verifyUrl = Url.Page(
+                        "/Account/VerifyAlternateEmail",
+                        pageHandler: null,
+                        values: new { token = userInDb.AlternateEmailVerificationToken },
+                        protocol: Request.Scheme);
+
+                    await _emailSender.SendEmailAsync(
+                        submittedAlternateEmail,
+                        "Verify your alternate email",
+                        $"Click this link to verify your alternate email: <a href=\"{verifyUrl}\">{verifyUrl}</a>");
+                }
+            }
+
             userInDb.DateOfBirth = Profile.DateOfBirth;
             userInDb.Gender = Profile.Gender;
             userInDb.Description = Profile.Description;

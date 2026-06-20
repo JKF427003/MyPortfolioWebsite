@@ -10,5 +10,6 @@ namespace MyPortfolioWebsite.Data
 
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectImage> ProjectImages { get; set; }
     }
 }

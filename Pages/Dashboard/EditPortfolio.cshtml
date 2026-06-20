@@ -1,4 +1,73 @@
 ﻿@page
 @model MyPortfolioWebsite.Pages.Dashboard.EditPortfolioModel
 @{
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Edit Portfolio";
 }
+
+<div class="profile-page">
+    <div class="profile-header">
+        <div class="profile-title">
+            <span class="profile-icon">
+                <i class="bi bi-kanban"></i>
+            </span>
+            <div>
+                <p class="eyebrow">Dashboard</p>
+                <h1>Edit portfolio</h1>
+                <p class="profile-subtitle">Create, manage, and organize the projects shown in your portfolio.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="portfolio-grid">
+        <a asp-page="/Dashboard/Projects/Create" class="project-create-card">
+            <span class="project-create-icon">
+                <i class="bi bi-plus-lg"></i>
+            </span>
+            <strong>Create new project</strong>
+            <span>Add a project to your portfolio</span>
+        </a>
+
+        @foreach (var project in Model.Projects)
+        {
+            <article class="project-card">
+                <div class="project-card-image">
+                    @if (!string.IsNullOrWhiteSpace(project.CoverImageUrl))
+                    {
+                        <img src="@project.CoverImageUrl" alt="@project.Title" />
+                    }
+                    else
+                    {
+                        <div class="project-card-placeholder">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    }
+                </div>
+
+                <div class="project-card-body">
+                    <h2>@project.Title</h2>
+                    <p>@project.ShortSummary</p>
+
+                    @if (!string.IsNullOrWhiteSpace(project.ProgrammingLanguages))
+                    {
+                        <span class="project-chip">@project.ProgrammingLanguages</span>
+                    }
+
+                    <div class="project-card-actions">
+                        <a asp-page="/Dashboard/Projects/Details" asp-route-id="@project.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye me-1"></i>View
+                        </a>
+                        
+                        <a asp-page="/Dashboard/Projects/Edit" asp-route-id="@project.Id" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil-square me-1"></i>Edit
+                        </a>
+
+                        <a asp-page="/Dashboard/Projects/Delete" asp-route-id="@project.Id" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash me-1"></i>Delete
+                        </a>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+</div>

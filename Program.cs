@@ -15,6 +15,7 @@ builder.Services.AddSingleton<IVersionService, VersionService>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthentication(options => { options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; }).AddCookie().AddGoogle(options => { options.ClientId = builder.Configuration["Authentication:Google:ClientId"]; options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]; options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");  options.SaveTokens = true; });
 builder.Services.AddAuthorization();
+builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 
 var app = builder.Build();
 

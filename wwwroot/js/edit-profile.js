@@ -67,3 +67,9 @@ if (photoInput && photoEditor && photoEditorImage && croppedPhotoData) {
         });
     }
 }
+
+window.addEventListener("storage", function (event) {
+    if (event.key === "profile-email-verified") {
+        window.location.reload();
+    }
+});
