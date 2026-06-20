@@ -25,4 +25,11 @@
     <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
+	<ItemGroup>
+		<Compile Remove="MyPortfolioWebsite.Tests\**\*.cs" />
+		<Content Remove="MyPortfolioWebsite.Tests\**\*" />
+		<EmbeddedResource Remove="MyPortfolioWebsite.Tests\**\*" />
+		<None Remove="MyPortfolioWebsite.Tests\**\*" />
+	</ItemGroup>
+
 </Project>
