@@ -30,41 +30,51 @@
 
         @foreach (var project in Model.Projects)
         {
-            <article class="project-card">
-                <div class="project-card-image">
-                    @if (!string.IsNullOrWhiteSpace(project.CoverImageUrl))
-                    {
-                        <img src="@project.CoverImageUrl" alt="@project.Title" />
-                    }
-                    else
-                    {
-                        <div class="project-card-placeholder">
-                            <i class="bi bi-image"></i>
+            <article class="project-flip-card">
+                <div class="project-flip-inner">
+                    <div class="project-flip-face project-flip-front">
+                        <div class="project-card-image">
+                            @if (!string.IsNullOrWhiteSpace(project.CoverImageUrl))
+                            {
+                                <img src="@project.CoverImageUrl" alt="@project.Title" />
+                            }
+                            else
+                            {
+                                <div class="project-card-placeholder">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                            }
                         </div>
-                    }
-                </div>
 
-                <div class="project-card-body">
-                    <h2>@project.Title</h2>
-                    <p>@project.ShortSummary</p>
+                        <div class="project-card-body">
+                            <h2>@project.Title</h2>
 
-                    @if (!string.IsNullOrWhiteSpace(project.ProgrammingLanguages))
-                    {
-                        <span class="project-chip">@project.ProgrammingLanguages</span>
-                    }
+                            @if (!string.IsNullOrWhiteSpace(project.ProgrammingLanguages))
+                            {
+                                <span class="project-chip">@project.ProgrammingLanguages</span>
+                            }
+                        </div>
+                    </div>
 
-                    <div class="project-card-actions">
-                        <a asp-page="/Dashboard/Projects/Details" asp-route-id="@project.Id" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-eye me-1"></i>View
-                        </a>
-                        
-                        <a asp-page="/Dashboard/Projects/Edit" asp-route-id="@project.Id" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-pencil-square me-1"></i>Edit
-                        </a>
+                    <div class="project-flip-face project-flip-back">
+                        <div>
+                            <h2>@project.Title</h2>
+                            <p>@project.ShortSummary</p>
+                        </div>
 
-                        <a asp-page="/Dashboard/Projects/Delete" asp-route-id="@project.Id" class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-trash me-1"></i>Delete
-                        </a>
+                        <div class="project-card-actions">
+                            <a asp-page="/Dashboard/Projects/Details" asp-route-id="@project.Id" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>View
+                            </a>
+
+                            <a asp-page="/Dashboard/Projects/Edit" asp-route-id="@project.Id" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil-square me-1"></i>Edit
+                            </a>
+
+                            <a asp-page="/Dashboard/Projects/Delete" asp-route-id="@project.Id" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i>Delete
+                            </a>
+                        </div>
                     </div>
                 </div>
             </article>

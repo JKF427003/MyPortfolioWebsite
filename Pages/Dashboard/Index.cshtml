@@ -1,7 +1,92 @@
 ﻿@page
 @model MyPortfolioWebsite.Pages.Dashboard.IndexModel
 @{
-    Layout = ViewData["Layout"] as string;
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Dashboard";
 }
 
-<h2>Welcome to your dashboard, @User.Identity?.Name!</h2>
+<div class="profile-page">
+    <div class="profile-header">
+        <div class="profile-title">
+            <span class="profile-icon">
+                <i class="bi bi-speedometer2"></i>
+            </span>
+            <div>
+                <p class="eyebrow">Dashboard</p>
+                <h1>Welcome back, @User.Identity?.Name</h1>
+                <p class="profile-subtitle">Track your portfolio projects and see what your work is made of.</p>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Projects.Any())
+    {
+        <div class="profile-panel dashboard-empty">
+            <h2>No projects yet</h2>
+            <p>Create your first project to start building your portfolio dashboard.</p>
+            <a asp-page="/Dashboard/Projects/Create" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Create project
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="dashboard-grid">
+            <section class="profile-panel dashboard-showcase">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <p class="eyebrow">Featured</p>
+                        <h2>Project showcase</h2>
+                    </div>
+                    <a asp-page="/Dashboard/EditPortfolio" class="btn btn-outline-primary btn-sm">Manage projects</a>
+                </div>
+
+                <div class="dashboard-showcase-frame">
+                    @for (var i = 0; i < Model.Projects.Count; i++)
+                    {
+                        var project = Model.Projects[i];
+
+                        <article class="dashboard-featured-project @(i == 0 ? "is-active" : "")">
+                            @if (!string.IsNullOrWhiteSpace(project.CoverImageUrl))
+                            {
+                                <img src="@project.CoverImageUrl" alt="@project.Title" />
+                            }
+
+                            <div class="dashboard-featured-content">
+                                <h3>@project.Title</h3>
+                                <p>@project.ShortSummary</p>
+
+                                @if (!string.IsNullOrWhiteSpace(project.ProgrammingLanguages))
+                                {
+                                    <span class="project-chip">@project.ProgrammingLanguages</span>
+                                }
+
+                                <a asp-page="/Dashboard/Projects/Details" asp-route-id="@project.Id" class="btn btn-primary btn-sm">
+                                    View project
+                                </a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+
+            <aside class="profile-photo-panel dashboard-chart-panel">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <p class="eyebrow">Languages</p>
+                        <h2>Project mix</h2>
+                    </div>
+                </div>
+
+                <canvas id="languageChart"
+                        data-labels='@Html.Raw(Model.LanguageLabelsJson)'
+                        data-counts='@Html.Raw(Model.LanguageCountsJson)'></canvas>
+            </aside>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
+}

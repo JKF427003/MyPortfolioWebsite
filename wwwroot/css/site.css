@@ -388,7 +388,195 @@ textarea.form-control {
         border: 1px solid #e5e7eb;
     }
 
+.project-flip-card {
+    min-height: 300px;
+    perspective: 1200px;
+}
+
+.project-flip-inner {
+    position: relative;
+    min-height: 300px;
+    transition: transform 0.7s ease;
+    transform-style: preserve-3d;
+}
+
+.project-flip-card:hover .project-flip-inner,
+.project-flip-card:focus-within .project-flip-inner {
+    transform: rotateY(180deg);
+}
+
+.project-flip-face {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    backface-visibility: hidden;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.project-flip-front {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-flip-back {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+    transform: rotateY(180deg);
+}
+
+    .project-flip-back h2 {
+        margin-bottom: 0.5rem;
+        color: #0f172a;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .project-flip-back p {
+        color: #64748b;
+    }
+
+/* Dashboard */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 1.5rem;
+}
+
+.dashboard-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+    .dashboard-panel-header h2 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+.dashboard-showcase-frame {
+    position: relative;
+    min-height: 420px;
+}
+
+.dashboard-featured-project {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+    gap: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+}
+
+    .dashboard-featured-project.is-active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .dashboard-featured-project img {
+        width: 100%;
+        height: 100%;
+        min-height: 360px;
+        object-fit: cover;
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+.dashboard-featured-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+    .dashboard-featured-content h3 {
+        margin-bottom: 0.75rem;
+        color: #0f172a;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .dashboard-featured-content p {
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+.dashboard-chart-panel {
+    min-height: 420px;
+}
+
+.dashboard-empty {
+    text-align: center;
+}
+
+    .dashboard-empty h2 {
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+    .dashboard-empty p {
+        color: #64748b;
+    }
+
 /* Responsive */
+@media (max-width: 575.98px) {
+    .profile-title {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+        .profile-title h1 {
+            font-size: 1.6rem;
+        }
+
+    .profile-icon {
+        width: 46px;
+        height: 46px;
+    }
+
+    .dashboard-showcase-frame {
+        min-height: 620px;
+    }
+
+    .dashboard-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .project-flip-card,
+    .project-flip-inner {
+        min-height: auto;
+    }
+
+    .project-flip-inner {
+        display: block;
+        transform: none !important;
+    }
+
+    .project-flip-face {
+        position: static;
+        backface-visibility: visible;
+    }
+
+    .project-flip-back {
+        transform: none;
+        border-top: 0;
+        border-radius: 0 0 8px 8px;
+    }
+}
+
 @media (min-width: 768px) {
     html {
         font-size: 16px;
@@ -408,20 +596,17 @@ textarea.form-control {
     .project-details-layout {
         grid-template-columns: 1fr;
     }
-}
 
-@media (max-width: 575.98px) {
-    .profile-title {
-        flex-direction: column;
-        gap: 0.75rem;
+    .dashboard-grid {
+        grid-template-columns: 1fr;
     }
 
-        .profile-title h1 {
-            font-size: 1.6rem;
-        }
+    .dashboard-featured-project {
+        grid-template-columns: 1fr;
+    }
 
-    .profile-icon {
-        width: 46px;
-        height: 46px;
+    .dashboard-showcase-frame {
+        min-height: 680px;
     }
 }
+
