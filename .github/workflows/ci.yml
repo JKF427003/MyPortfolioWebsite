@@ -34,7 +34,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test --confirguration Release --no-build
+        run: dotnet test MyPortfolioWebsite.Tests/MyPortfolioWebsite.Tests.csproj --configuration Release --no-restore
 
       - name: Publish application artifact
         run: dotnet publish MyPortfolioWebsite.csproj --configuration Release --no-build --output ./publish
